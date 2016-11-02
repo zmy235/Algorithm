@@ -1,243 +1,155 @@
 //*******************************************
-//Compositor.cpp   2014/6/10 by Adaq
-//@brief: 本文件为order的C++实现。
+//Sort.cpp   
+//2014/6/10 by Adaq
+//2016/11/1 edited by Veizi
+//@brief: 本文件为sort的C++实现。
 //*******************************************
 #include <iostream>
+#include <memory.h>
 using namespace std;
 
-template<class Type>
-class Compositor
+class Sort
 {
 public:
-    void Creat();
-    void Print();
-
-    void Bubble(); //冒泡排序
-
-    void Insert(); //插入排序
-
-    void Quick();   //快速排序
-    void QSort(int,int);
-    int Partition(int low,int high);
-
-    void Merge(Type SR[],Type TR[],int i,int m,int n);  //归并排序
-    void Msort(Type SR[],Type TR1[],int s,int t);
-    void MergeSort();
-
-    void Select();  //选择排序
-
-protected:
-    Type *sort;
     int leng;
+    void Print(int arr[]);
+
+    void Insert(int arr[]); //插入排序
+    void Bubble(int arr[]); //冒泡排序
+    void Select(int arr[]);  //选择排序
+    void Qsort(int arr[],int low,int high);//快速排序
+    void Msort(int arr[],int cut[],int s,int t); //归并排序 
+    void Merge(int arr[],int cut[],int i,int m,int n);
 };
 
-
-template<class Type>
-void Compositor<Type>::Creat()
-{
-    cout<<"Put in the number you want to order:";
-    cin>>leng;
-    sort=new Type[leng];
-    cout<<"Put In your data:";
-    for(int i=0; i<leng; i++)
-        cin>>sort[i];
-}
-
-template<class Type>
-void Compositor<Type>::Print()
+void Sort::Print(int arr[])
 {
     cout<<"Rresult: ";
     for(int i=0; i<leng; i++)
-        cout<<sort[i]<<" ";
+        cout<<arr[i]<<" ";
     cout<<endl;
 }
 
 //---------------------------------------------------
 
-template<class Type>
-void Compositor<Type>::Insert()
+void Sort::Insert(int arr[])
 {
-    Type temp;
     for(int i=1; i<leng; i++)
     {
-        if(sort[i]<sort[i-1])
+        if(arr[i]<arr[i-1])
         {
-            temp=sort[i];
-            for(int j=i-1; temp<sort[j]&&j>=0; j--)
+            int temp=arr[i];
+            for(int j=i-1; temp<arr[j]&&j>=0; j--)
             {
-                sort[j+1]=sort[j];
+                arr[j+1]=arr[j];
             }
-            sort[i+1]=temp;
+            arr[i+1]=temp;
         }
-    Print();
+        Print(arr);
     }
 }
 
 //------------------------------------------------------
 
-template<class Type>
-void Compositor<Type>::Bubble()
+void Sort::Bubble(int arr[])
 {
-    Type temp;
     for(int i=leng-1; i>=0; i--)
     {
         for(int j=0; j<leng-1; j++)
         {
-            if(sort[j]>sort[j+1])
+            if(arr[j]>arr[j+1])
             {
-                temp=sort[j];
-                sort[j]=sort[j+1];
-                sort[j+1]=temp;
+                int temp=arr[j];
+                arr[j]=arr[j+1];
+                arr[j+1]=temp;
             }
         }
-    Print();
+        Print(arr);
+    }
+}
+
+//------------------------------------------------------------------
+
+void Sort::Select(int arr[])
+{
+    for(int i=0; i<leng; i++)
+    {
+        int max=i;
+        for(int j=i+1; j<leng; j++)
+        {
+            if(arr[max]>arr[j]) max=j;
+        }
+        if(max!=i)
+        {
+            int temp=arr[max];
+            arr[max]=arr[i];
+            arr[i]=temp;
+        }
+        Print(arr);
     }
 }
 
 //-----------------------------------------------
 
-template<class Type>
-void Compositor<Type>::Quick()
+void Sort::Qsort(int a[], int low, int high)
 {
-    QSort(0,leng-1);
-}
-
-template<class Type>
-void Compositor<Type>::QSort(int s,int t)
-{
-    if(s<t-1)
+    if(low >= high) return;
+    int first = low;
+    int last = high;
+    int key = a[first]; /*用字表的第一个记录作为枢轴*/
+    while(first < last)
     {
-        int pivotloc=Partition(s,t);
-        QSort(s,pivotloc-1);
-        QSort(pivotloc+1,t);
+        while(first < last && a[last] >= key) --last;
+        a[first] = a[last]; /*将比第一个小的移到低端*/
+        while(first < last && a[first] <= key) ++first;
+        a[last] = a[first]; /*将比第一个大的移到高端*/
     }
-    Print();
-}
-
-template<class Type>
-int Compositor<Type>::Partition(int low,int high)
-{
-    Type pivotkey=sort[low];
-    while(low < high)
-    {
-        while(low<high&&sort[high]>=pivotkey)
-            --high;
-        sort[low++]=sort[high];
-        while(low<high&&sort[low]<=pivotkey)
-            ++low;
-        sort[high--]=sort[low];
-    }
-    sort[low]=pivotkey;
-    return low;
+    a[first] = key; /*枢轴记录到位*/
+    Qsort(a, low, first-1);
+    Print(a);
+    Qsort(a, first+1, high);
 }
 
 //----------------------------------------------------------
 
-template<class Type>
-void Compositor<Type>::MergeSort()
+void Sort::Msort(int arr[],int cut[],int s,int t)
 {
-    Msort(sort,sort,0,leng-1);
-    Print();
-}
-
-template<class Type>
-void Compositor<Type>::Msort(Type SR[],Type TR1[],int s,int t)
-{
-    int m;
-    Type *TR2=new Type[t-s];
-    if(s==t) TR1[s]=SR[s];
+    if(s==t) cut[s]=arr[s];
     else
     {
-        m=(t+s)/2;
-        Msort(SR,TR2,s,m);
-        Msort(SR,TR2,m+1,t);
-        Merge(TR2,TR1,s,m,t);
+        int m=(t+s)/2;
+        int n=t-s;
+        int *temp = new int[n]();// 每个元素初始化为0
+        Msort(arr,temp,s,m);
+        Msort(arr,temp,m+1,t);
+        Merge(temp,cut,s,m,t);
     }
 }
 
-template<class Type>
-void Compositor<Type>::Merge(Type SR[],Type TR[],int i,int m,int n)
+void Sort::Merge(int arr[],int cut[],int i,int m,int n)
 {
-    int j=m+1;
-    int k=i;
+    int k=i,j=m+1;
     for(; i<=m&&j<=n; k++)
     {
-        if(SR[i]<=SR[j])
-            TR[k]=SR[i++];
-        else
-            TR[k]=SR[j++];
+        if(arr[i]<=arr[j]) cut[k]=arr[i++];
+        else cut[k]=arr[j++];
     }
-    while(i<=m)
-        TR[k++]=SR[i++];
-    while(j<=n)
-        TR[k++]=SR[j++];
-}
-
-//------------------------------------------------------------------
-
-template<class Type>
-void Compositor<Type>::Select()
-{
-    Type temp;
-    int t;
-    for(int i=0; i<leng; i++)
-    {
-        t=i;
-        for(int j=i+1; j<leng; j++)
-        {
-            if(sort[t]>sort[j])
-                t=j;
-        }
-        if(t!=i)
-        {
-            temp=sort[t];
-            sort[t]=sort[i];
-            sort[i]=temp;
-        }
-    Print();
-    }
+    while(i<=m) cut[k++]=arr[i++];
+    while(j<=n) cut[k++]=arr[j++];
 }
 
 //---------------------------------------------------------
 
 int main()
 {
-    typedef int type;
-    Compositor <type> Compositor1;
-    for(;;)
-    {
-        cout<<"Make Your Choice:"<<endl
-            <<" 0) Array"<<endl
-            <<" 1) Insert"<<endl
-            <<" 2) Quick"<<endl
-            <<" 3) Merge"<<endl
-            <<" 4) Bubble"<<endl
-            <<" 5) Select"<<endl;
-        int item;
-        cin>>item;
-        switch(item)
-        {
-        case 0:
-            Compositor1.Creat();
-            break;
-        case 1:
-            Compositor1.Insert();
-            break;
-        case 2:
-            Compositor1.Quick();
-            break;
-        case 3:
-            Compositor1.MergeSort();
-            break;
-        case 4:
-            Compositor1.Bubble();
-            break;
-        case 5:
-            Compositor1.Select();
-            break;
-        default:
-            break;
-        }
-    }
+    Sort* S=new Sort();
+    int arr[]={5,7,6,8,3,2,9,1};
+    S->leng=sizeof(arr)/sizeof(int);
+    //S->Insert(arr);
+    //S->Bubble(arr);
+    //S->Select(arr);
+    //S->Qsort(arr,0,S->leng-1);
+    int *temp = new int[S->leng-1]();// 每个元素初始化为0
+    S->Msort(arr,temp,0,S->leng-1);
     return 0;
 }
