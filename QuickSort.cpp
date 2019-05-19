@@ -8,8 +8,8 @@
 
 #include<bits/stdc++.h>
 using namespace std;
-#define SIZE 10000
-#define RANGE 10000
+#define SIZE 10
+#define RANGE 100
 
 void H(int& i,int& j)
 {
@@ -23,20 +23,21 @@ int times=0;
 void qsort(int* a,int start,int end)
 {
     times++;
+    int temp=a[start];
     int i = start;
     int j = end;
 
     while(i<j)
     {
-        while( a[j]>=a[start] && j>i ) j--;
+        while( a[j]>=temp && j>i ) j--;
         if( i<j )
         {
             a[i++]=a[j];
-            while( a[i]<=a[start] && i<j ) i++;
+            while( a[i]<=temp && i<j ) i++;
             if( i<j ) a[j--]=a[i];
         }
     }
-    a[i] = a[start];
+    a[i] = temp;
     if( start<(i-1) ) qsort(a,start,i-1);
     if( (j+1)<end ) qsort(a,j+1,end);
 }
@@ -94,10 +95,11 @@ int main()
     for(int p=0; p<SIZE; p++) cout<<w[p]<<" ";
     cout<<endl;
 
+
+
     //进行排序
-    int* &&a(w);
-    Qsort(a,0,SIZE-1);
-    //qsort(a,0,SIZE-1);
+    Qsort(w,0,SIZE-1);
+    //qsort(w,0,SIZE-1);
 
     //排序结果
     for(int p=0; p<SIZE; p++) cout<<w[p]<<" ";
