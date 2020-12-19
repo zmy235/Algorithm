@@ -148,7 +148,7 @@ int main()
     //S->Insert(arr);
     //S->Bubble(arr);
     //S->Select(arr);
-    //S->Qsort(arr,0,S->leng-1);
+    S->Qsort(arr,0,S->leng-1);
     int *temp = new int[S->leng-1]();// 每个元素初始化为0
     S->Msort(arr,temp,0,S->leng-1);
     return 0;
