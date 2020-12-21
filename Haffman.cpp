@@ -112,7 +112,7 @@ void decodeing(char string[],HNodeType Buf[],int Num)
     while(nump<(&num[strlen(string)]))
     {
         tmp = m-1;
-        while((Buf[tmp].lchild! = -1)&&(Buf[tmp].rchild! = -1))
+        while((Buf[tmp].lchild != -1)&&(Buf[tmp].rchild != -1))
         {
             if(*nump == 0)
             {
